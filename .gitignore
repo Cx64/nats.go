@@ -40,3 +40,7 @@ _testmain.go
 
 # Goland
 .idea
+
+# patch/diff
+*.patch
+*.diff
