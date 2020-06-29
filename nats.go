@@ -4175,10 +4175,15 @@ func wipeSlice(buf []byte) {
 	}
 }
 
+func isJWTtoken(buffer string) bool {
+	// return true if the buffer is a JWT token
+	return strings.HasPrefix(buffer, "-----BEGIN NATS USER JWT-----\n")
+}
+
 func userFromFile(userFile string) (string, error) {
 	// protect jwt token file on cutomer's onprem pc filesystem it's a challange, we prefer
 	// to store it on encrypt db and pass it to nats.go client as a buffer
-	if strings.HasPrefix(userFile, "-----BEGIN NATS USER JWT-----\n") {
+	if isJWTtoken(userFile) {
 		return nkeys.ParseDecoratedJWT([]byte(userFile))
 	}
 	path, err := expandPath(userFile)
@@ -4237,7 +4242,7 @@ func expandPath(p string) (string, error) {
 func nkeyPairFromSeedFile(seedFile string) (nkeys.KeyPair, error) {
 	// protect jwt token file on cutomer's onprem pc filesystem it's a challange, we prefer
 	// to store it on encrypt db and pass it to nats.go client as a buffer
-	if strings.HasPrefix(seedFile, "-----BEGIN NATS USER JWT-----\n") {
+	if isJWTtoken(seedFile) {
 		return nkeys.ParseDecoratedNKey([]byte(seedFile))
 	}
 	contents, err := ioutil.ReadFile(seedFile)
